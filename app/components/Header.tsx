@@ -10,10 +10,21 @@ import { getMegaMenu } from "../services/megamenu.service";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeMegaMenu, setActiveMegaMenu] = useState(null);
+  const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
 
   // Fonction pour formater les labels
-  const formatLabel = (label) => {
+  interface MegaMenuItem {
+    label: string;
+    count?: number;
+    url: string;
+  }
+
+  interface MegaMenuCategory {
+    name: string;
+    items: MegaMenuItem[];
+  }
+
+  const formatLabel = (label: string): string => {
     return label
       .replace("vin_", "")
       .replace(/_/g, " ")
@@ -171,33 +182,38 @@ const Header = () => {
                           }  gap-6`}
                         >
                           {megaMenus[menuItem].categories.map(
-                            (category, index) => (
+                            (category: MegaMenuCategory, index: number) => (
                               <div key={index}>
                                 <h4 className="font-bold text-[#810b15] dark:text-white mb-3 text-lg border-b border-[#810b15] border-spacing-4 dark:border-gray-700 pb-2">
                                   {category.name}
                                 </h4>
                                 <ul className="">
-                                  {category.items.map((item, itemIndex) => {
-                                    const label = formatLabel(item.label);
-                                    const count = item.count || 0;
-                                    const url = `/pages${item.url}` || "#";
+                                  {category.items.map(
+                                    (item: MegaMenuItem, itemIndex: number) => {
+                                      const label = formatLabel(item.label);
+                                      const count = item.count || 0;
+                                      const url = `/pages${item.url}` || "#";
 
-                                    return (
-                                      <li key={itemIndex} className="border-b">
-                                        <a
-                                          href={url}
-                                          className="text-gray-600 dark:text-gray-300 hover:text-[#810b15] dark:hover:text-[#e63946] transition-colors duration-200 block pb-1 flex justify-between items-center"
+                                      return (
+                                        <li
+                                          key={itemIndex}
+                                          className="border-b"
                                         >
-                                          <span>{label}</span>
-                                          {count > 0 && (
-                                            <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2  rounded-full">
-                                              {count}
-                                            </span>
-                                          )}
-                                        </a>
-                                      </li>
-                                    );
-                                  })}
+                                          <a
+                                            href={url}
+                                            className="text-gray-600 dark:text-gray-300 hover:text-[#810b15] dark:hover:text-[#e63946] transition-colors duration-200 block pb-1 flex justify-between items-center"
+                                          >
+                                            <span>{label}</span>
+                                            {count > 0 && (
+                                              <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2  rounded-full">
+                                                {count}
+                                              </span>
+                                            )}
+                                          </a>
+                                        </li>
+                                      );
+                                    }
+                                  )}
                                 </ul>
                               </div>
                             )
