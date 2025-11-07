@@ -49,7 +49,7 @@ export const NoResults: React.FC<NoResultsProps> = ({ searchTerm }) => {
         hover:underline
       "
       >
-        Besoin d'aide ? Contactez nous !
+        {`Besoin d'aide ? Contactez nous !`}
       </a>
     </div>
   );

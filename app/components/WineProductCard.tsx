@@ -12,6 +12,7 @@ import {
 import { FaRotate } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 import { SimpleModelViewer, ThreeJSViewer } from "./ThreeJSViewer";
+import Image from "next/image";
 
 // Composant principal WineProductCard
 interface WineProductCardProps {
@@ -229,7 +230,7 @@ const WineProductCard: React.FC<WineProductCardProps> = ({
                 >
                   {images.length > 0 ? (
                     <>
-                      <img
+                      <Image
                         src={images[currentImageIndex]}
                         alt={nom}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

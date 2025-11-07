@@ -16,7 +16,7 @@ const WineBanner: React.FC<WineBannerProps> = ({ slides, filters }) => {
       setCurrent((prev) => (prev + 1) % slides?.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [slides?.length]);
 
   const prevSlide = () =>
     setCurrent((prev) => (prev === 0 ? slides?.length - 1 : prev - 1));
