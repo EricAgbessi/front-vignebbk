@@ -6,7 +6,7 @@ interface CategoryCardProps {
   title: string;
   subtitle?: string;
   buttonText?: string;
-  bgColor: string; // Ex: 'bg-purple-900' ou 'bg-gray-800'
+  bgColor?: string; // Ex: 'bg-purple-900' ou 'bg-gray-800'
   backgroundImage: string; // URL ou chemin vers l'image
   isOverlay?: boolean; // Vrai si le contenu est superposé à une image
   className?: string; // Classes Tailwind supplémentaires pour la carte
