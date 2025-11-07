@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "./Providers/providers";
+import { cavas } from "./fonts/cavas";
+import TanstackQueryProvider from "./Providers/TanstackQueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,10 +27,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#ffffff" />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${cavas.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <TanstackQueryProvider>
+          <ThemeProvider
+            attribute="class" // Permet d'appliquer 'dark' ou 'light' à la balise <html>
+            defaultTheme="system" // Thème par défaut basé sur le système de l'utilisateur
+            enableSystem // Active la détection de la préférence système (préféré)
+            disableTransitionOnChange // Ajout important
+          >
+            {children}
+          </ThemeProvider>
+        </TanstackQueryProvider>
       </body>
     </html>
   );
