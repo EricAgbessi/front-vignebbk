@@ -3,7 +3,7 @@ import React from "react";
 import { FaStar } from "react-icons/fa";
 
 // --- Données pour les articles sur les vins et spiritueux ---
-const guidesData = [
+const guidesData: GuideItemProps[] = [
   {
     title: "Les grands crus bordelais",
     text: "Découvrez l'excellence des vins de Bordeaux, des premiers grands crus classés aux pépites méconnues. Apprenez à reconnaître les appellations prestigieuses et leurs caractéristiques uniques.",

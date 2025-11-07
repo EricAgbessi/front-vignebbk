@@ -1,0 +1,48 @@
+# ==================================
+# ÉTAPE 1: ÉTAPE DE BUILD (CONSTRUCTION)
+# ==================================
+FROM node:22-alpine AS builder
+
+# Définir le répertoire de travail dans le conteneur
+WORKDIR /app
+
+# Copier les fichiers de configuration (package.json, etc.) et installer les dépendances
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copier le reste du code source
+COPY . .
+
+# Lancer la construction Next.js. 
+# Cette étape crée le dossier .next/
+RUN npm run build
+
+
+# ==================================
+# ÉTAPE 2: ÉTAPE D'EXÉCUTION (RUN)
+# ==================================
+# Utiliser une image Node Alpine plus légère pour la production
+FROM node:22-alpine AS runner
+
+# Variables d'environnement pour Next.js en production
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Le dossier de travail sera le dossier de construction final
+WORKDIR /app
+
+# 1. Copier les dépendances de production uniquement depuis l'étape 'builder'
+# (Pour le bon fonctionnement de next start)
+COPY --from=builder /app/node_modules ./node_modules
+
+# 2. Copier les fichiers essentiels pour l'exécution (construits dans l'étape 'builder')
+# .next/static contient les assets publics
+COPY --from=builder /app/.next ./.next
+# public/ contient les fichiers statiques
+COPY --from=builder /app/public ./public
+
+# Exposer le port par défaut de Next.js
+EXPOSE 3000
+
+# Commande pour démarrer l'application construite
+CMD ["npm", "start"]
