@@ -184,7 +184,7 @@ const App: React.FC = () => {
               ✕ Fermer
             </button>
           </div>
-          <div className="p-6">
+          <div className="p-6 mt-20">
             <FiltersSidebar
               data={filtersData}
               onFilterChange={handleFilterChange}

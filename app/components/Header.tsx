@@ -7,6 +7,7 @@ import { LuCircleHelp, LuHandshake } from "react-icons/lu";
 import { ThemeToggle } from "./ThemeToggle";
 import { useQuery } from "@tanstack/react-query";
 import { getMegaMenu } from "../services/megamenu.service";
+import Link from "next/link";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -63,7 +64,8 @@ const Header = () => {
       <div className="border-b dark:border-gray-700">
         <div className="max-w-full mx-auto px-4 flex items-center justify-between py-3">
           {/* Logo */}
-          <div
+          <Link
+            href="/"
             style={{
               display: "flex",
               flexDirection: "column",
@@ -76,7 +78,7 @@ const Header = () => {
             <span className="text-xs font-cavas text-gray-600 dark:text-gray-400 hidden md:block">
               VINS • CHAMPAGNES • COGNAC
             </span>
-          </div>
+          </Link>
 
           {/* Barre de recherche */}
           <div className="flex-1 mx-4 hidden md:flex font-cavas">

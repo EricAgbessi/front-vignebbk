@@ -1,5 +1,5 @@
 // Définition de l'interface pour le format idéal du composant (très utile pour la sécurité de type)
-interface NormalizedProduct {
+export interface NormalizedProduct {
   category: string;
   name: string;
   vintage: string;
@@ -49,6 +49,30 @@ interface ApiResponse {
   pagination: any;
   message: string;
 }
+
+type ProductStyle = "vin_blanc" | "vin_rose" | "vin_rouge" | string;
+
+const getProductImage = (product: ApiProduct): string => {
+  if (product.images?.length) return product.images[0];
+
+  const styleImages: Record<ProductStyle, string> = {
+    vin_blanc: "/images/vin_blanc_demo.png",
+    vin_rose: "/images/vin_rose_demo.png",
+    vin_rouge: "/images/vin_rouge_demo.png",
+  };
+
+  const typeImages: Record<ProductStyle, string> = {
+    cognac: "/images/cognac_demo.png",
+  };
+
+  if (product.type === "cognac") {
+    return typeImages[product.type ?? "vin"] || "/images/placeholder-vin.png";
+  } else {
+    return (
+      styleImages[product.style ?? "vin_rouge"] || "/images/placeholder-vin.png"
+    );
+  }
+};
 
 /**
  * Transforme un produit de l'API en un format idéal pour le composant,
@@ -118,9 +142,7 @@ const normalizeProduct = (product: ApiProduct): NormalizedProduct => {
 
     // Image : Utiliser la première image ou un fallback
     imageUrl:
-      product.images.length > 0
-        ? product.images[0]
-        : "/images/placeholder-vin.png",
+      product.images.length > 0 ? product.images[0] : getProductImage(product),
 
     // Badges : Fictif, basé sur la cote ou la promo
     badges:

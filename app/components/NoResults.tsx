@@ -3,11 +3,11 @@ import { FaWineGlass, FaFilter, FaRedo } from "react-icons/fa";
 
 interface NoResultsProps {
   // Optionnel : un message spécifique si la recherche est très précise
-  searchTerm?: string;
+  message?: string;
   // Fonction appelée lorsque l'utilisateur clique pour effacer les filtres
 }
 
-export const NoResults: React.FC<NoResultsProps> = ({ searchTerm }) => {
+export const NoResults: React.FC<NoResultsProps> = ({ message }) => {
   return (
     <div
       className="
@@ -36,7 +36,7 @@ export const NoResults: React.FC<NoResultsProps> = ({ searchTerm }) => {
         mb-2
       "
       >
-        Dommage, aucune trouvaille !
+        {message ? message : "Dommage, aucune trouvaille !"}
       </h2>
 
       {/* Bonus : Suggestion alternative */}

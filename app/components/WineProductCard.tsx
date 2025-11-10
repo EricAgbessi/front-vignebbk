@@ -79,7 +79,7 @@ const WineProductCard: React.FC<WineProductCardProps> = ({
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("fr-FR", {
       style: "currency",
-      currency: "EUR",
+      currency: "XOF",
     }).format(price);
   };
 
@@ -230,7 +230,7 @@ const WineProductCard: React.FC<WineProductCardProps> = ({
                 >
                   {images.length > 0 ? (
                     <>
-                      <Image
+                      <img
                         src={images[currentImageIndex]}
                         alt={nom}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
