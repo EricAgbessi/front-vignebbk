@@ -35,7 +35,10 @@ WORKDIR /app
 # (Pour le bon fonctionnement de next start)
 COPY --from=builder /app/node_modules ./node_modules
 
-# 2. Copier les fichiers essentiels pour l'exécution (construits dans l'étape 'builder')
+# 2. Copier le fichier package.json (NÉCESSAIRE POUR 'npm start')
+COPY --from=builder /app/package.json ./package.json
+
+# 3. Copier les fichiers essentiels pour l'exécution (construits dans l'étape 'builder')
 # .next/static contient les assets publics
 COPY --from=builder /app/.next ./.next
 # public/ contient les fichiers statiques
