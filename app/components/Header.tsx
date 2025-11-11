@@ -8,11 +8,14 @@ import { ThemeToggle } from "./ThemeToggle";
 import { useQuery } from "@tanstack/react-query";
 import { getMegaMenu } from "../services/megamenu.service";
 import Link from "next/link";
+import PWAInstallPrompt from "./PWAInstallPrompt";
+import { usePWA } from "../hooks/usePWA";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
+  usePWA();
 
   // Fonction pour formater les labels
   interface MegaMenuItem {
@@ -388,6 +391,7 @@ const Header = () => {
                 <span>Devenir partenaire</span>
               </a>
             </li>
+            <PWAInstallPrompt />
           </ul>
         </div>
       )}
