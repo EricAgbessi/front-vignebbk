@@ -189,7 +189,7 @@ const Header = () => {
                   onMouseEnter={() => setActiveMegaMenu(menuItem)}
                   onMouseLeave={() => setActiveMegaMenu(null)}
                 >
-                  <button className="hover:text-[#810b15] mr-9 ml-9  dark:hover:text-[#e63946] transition-colors duration-200 py-2">
+                  <button className="hover:text-[#810b15] mr-9 ml-9 text-black  dark:hover:text-[#e63946] transition-colors duration-200 py-2">
                     {menuItem}
                   </button>
 
@@ -306,7 +306,7 @@ const Header = () => {
                 {mobileActiveMenu === menuItem && (
                   <div className="bg-gray-50 dark:bg-gray-900 animate-slideDown">
                     <div className="p-4 border-t dark:border-gray-700">
-                      <h4 className="font-bold text-[#810b15] dark:text-[#e63946] text-lg mb-3 pb-2 border-b border-[#810b15] dark:border-gray-600">
+                      <h4 className="font-bold text-[#810b15] dark:text-[#e63946] text-black  text-lg mb-3 pb-2 border-b border-[#810b15] dark:border-gray-600">
                         {megaMenus[menuItem].title}
                       </h4>
 
@@ -314,7 +314,7 @@ const Header = () => {
                         {megaMenus[menuItem].categories.map(
                           (category: MegaMenuCategory, index: number) => (
                             <div key={index}>
-                              <h5 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 text-md">
+                              <h5 className="font-semibold text-black  dark:text-gray-200 mb-2 text-md">
                                 {category.name}
                               </h5>
                               <ul className="space-y-2">

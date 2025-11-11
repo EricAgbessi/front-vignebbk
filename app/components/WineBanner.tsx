@@ -70,10 +70,10 @@ const WineBanner: React.FC<WineBannerProps> = ({ slides, filters }) => {
         {filters?.map((filter) => (
           <button
             key={filter.label}
-            className="flex items-center dark:text-white gap-2 border border-zinc-300 dark:border-zinc-600 px-4 py-1 rounded-full text-sm md:text-base hover:bg-red-100 dark:hover:bg-zinc-700 transition"
+            className="flex items-center dark:text-white text-black gap-2 border border-zinc-300 dark:border-zinc-600 px-4 py-1 rounded-full text-sm md:text-base hover:bg-red-100 dark:hover:bg-zinc-700 transition"
           >
             <span>{filter.icon}</span>
-            <span className="font-medium">{filter.label}</span>
+            <span className="font-medium ">{filter.label}</span>
           </button>
         ))}
       </div>
