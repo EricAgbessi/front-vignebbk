@@ -292,7 +292,7 @@ const Header = () => {
               <li key={i} className="border-b dark:border-gray-700">
                 <button
                   onClick={() => toggleMobileMenu(menuItem)}
-                  className="w-full flex justify-between items-center p-4 text-left hover:text-[#810b15] dark:text-white dark:hover:text-[#e63946] font-bold"
+                  className="w-full flex justify-between items-center text-black p-4 text-left hover:text-[#810b15] dark:text-white dark:hover:text-[#e63946] font-bold"
                 >
                   <span>{menuItem}</span>
                   {mobileActiveMenu === menuItem ? (
