@@ -294,7 +294,7 @@ const Header = () => {
                   onClick={() => toggleMobileMenu(menuItem)}
                   className="w-full flex justify-between items-center text-black p-4 text-left hover:text-[#810b15] dark:text-white dark:hover:text-[#e63946] font-bold"
                 >
-                  <span>{menuItem}</span>
+                  <span className="dark:text-white text-black">{menuItem}</span>
                   {mobileActiveMenu === menuItem ? (
                     <BsChevronUp className="text-gray-400" />
                   ) : (
