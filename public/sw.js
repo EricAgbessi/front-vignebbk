@@ -3,7 +3,9 @@ const urlsToCache = [
   '/',
   '/styles.css',
   '/app.js',
-  // Ajoutez les autres assets importants
+  './images',
+  './3D',
+  './icons',
 ];
 
 self.addEventListener('install', (event) => {
