@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { BsSearch } from "react-icons/bs";
+import { BsSearch, BsChevronDown, BsChevronUp, BsX } from "react-icons/bs";
 import { FaShoppingBasket } from "react-icons/fa";
 import { LuCircleHelp, LuHandshake } from "react-icons/lu";
 import { ThemeToggle } from "./ThemeToggle";
@@ -12,6 +12,7 @@ import Link from "next/link";
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
+  const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
 
   // Fonction pour formater les labels
   interface MegaMenuItem {
@@ -47,6 +48,32 @@ const Header = () => {
 
   // Utilise directement les données de l'API sans valeurs par défaut
   const megaMenus = data || {};
+
+  // // Fermer le menu mobile quand on change de taille d'écran
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     if (window.innerWidth >= 768) {
+  //       setMenuOpen(false);
+  //       setMobileActiveMenu(null);
+  //     }
+  //   };
+
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, []);
+
+  const toggleMobileMenu = (menuItem: string) => {
+    if (mobileActiveMenu === menuItem) {
+      setMobileActiveMenu(null);
+    } else {
+      setMobileActiveMenu(menuItem);
+    }
+  };
+
+  const closeAllMobileMenus = () => {
+    setMenuOpen(false);
+    setMobileActiveMenu(null);
+  };
 
   return (
     <header className="font-sans w-full h-35 relative bg-white dark:bg-black">
@@ -132,7 +159,7 @@ const Header = () => {
             className="md:hidden text-2xl ml-2 dark:text-white"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            ☰
+            {menuOpen ? <BsX size={28} /> : "☰"}
           </button>
         </div>
 
@@ -148,11 +175,10 @@ const Header = () => {
           />
         </div>
 
-        {/* Liens principaux avec mega menus */}
+        {/* Liens principaux avec mega menus - DESKTOP */}
         <nav className="hidden md:block bg-white font-cavas font-bold text-dark border-b border-black dark:bg-gray-800 dark:border-gray-700">
           <div className="relative">
             <ul className="flex flex-wrap justify-center space-x-6 text-sm font-bold text-dark dark:text-white">
-              {/* Menus avec mega menus - Affiche seulement les menus disponibles dans l'API */}
               {Object.keys(megaMenus).map((menuItem) => (
                 <li
                   className="relative group"
@@ -243,20 +269,125 @@ const Header = () => {
         </nav>
       </div>
 
-      {/* Menu mobile déroulant */}
+      {/* Menu mobile déroulant avec MEGA MENU */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t shadow-inner animate-slideDown dark:bg-gray-800 dark:border-gray-700">
-          <ul className="flex flex-col text-center text-sm font-medium py-4 space-y-2">
-            {Object.keys(megaMenus).map((item, i) => (
-              <li key={i}>
-                <a
-                  href="#"
-                  className="block hover:text-[#F36C45] dark:text-white dark:hover:text-[#e63946]"
+        <div className="md:hidden bg-white border-t shadow-inner animate-slideDown dark:bg-gray-800 dark:border-gray-700 max-h-[80vh] overflow-y-auto">
+          <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
+            <h3 className="font-bold text-lg text-[#810b15] dark:text-[#e63946]">
+              Navigation
+            </h3>
+            <button
+              onClick={closeAllMobileMenus}
+              className="text-gray-500 dark:text-gray-400"
+            >
+              <BsX size={24} />
+            </button>
+          </div>
+
+          <ul className="flex flex-col text-sm font-medium">
+            {Object.keys(megaMenus).map((menuItem, i) => (
+              <li key={i} className="border-b dark:border-gray-700">
+                <button
+                  onClick={() => toggleMobileMenu(menuItem)}
+                  className="w-full flex justify-between items-center p-4 text-left hover:text-[#810b15] dark:text-white dark:hover:text-[#e63946] font-bold"
                 >
-                  {item}
-                </a>
+                  <span>{menuItem}</span>
+                  {mobileActiveMenu === menuItem ? (
+                    <BsChevronUp className="text-gray-400" />
+                  ) : (
+                    <BsChevronDown className="text-gray-400" />
+                  )}
+                </button>
+
+                {/* Mega Menu Mobile */}
+                {mobileActiveMenu === menuItem && (
+                  <div className="bg-gray-50 dark:bg-gray-900 animate-slideDown">
+                    <div className="p-4 border-t dark:border-gray-700">
+                      <h4 className="font-bold text-[#810b15] dark:text-[#e63946] text-lg mb-3 pb-2 border-b border-[#810b15] dark:border-gray-600">
+                        {megaMenus[menuItem].title}
+                      </h4>
+
+                      <div className="space-y-6">
+                        {megaMenus[menuItem].categories.map(
+                          (category: MegaMenuCategory, index: number) => (
+                            <div key={index}>
+                              <h5 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 text-md">
+                                {category.name}
+                              </h5>
+                              <ul className="space-y-2">
+                                {category.items.map(
+                                  (item: MegaMenuItem, itemIndex: number) => {
+                                    const label = formatLabel(item.label);
+                                    const count = item.count || 0;
+                                    const url = `/pages${item.url}` || "#";
+
+                                    return (
+                                      <li key={itemIndex}>
+                                        <a
+                                          href={url}
+                                          onClick={closeAllMobileMenus}
+                                          className="text-gray-600 dark:text-gray-300 hover:text-[#810b15] dark:hover:text-[#e63946] transition-colors duration-200 block py-1 flex justify-between items-center"
+                                        >
+                                          <span className="flex-1">
+                                            {label}
+                                          </span>
+                                          {count > 0 && (
+                                            <span className="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full min-w-[2rem] text-center">
+                                              {count}
+                                            </span>
+                                          )}
+                                        </a>
+                                      </li>
+                                    );
+                                  }
+                                )}
+                              </ul>
+                            </div>
+                          )
+                        )}
+                      </div>
+
+                      {/* Image pour la section "Nos Vins" en mobile */}
+                      {megaMenus[menuItem].title === "Nos Vins" && (
+                        <div className="mt-4 pt-4 border-t dark:border-gray-700">
+                          <div
+                            className="h-32 w-full rounded-lg"
+                            style={{
+                              backgroundImage: "url(/images/mega-menu-vin.png)",
+                              backgroundRepeat: "no-repeat",
+                              backgroundPosition: "center",
+                              backgroundSize: "cover",
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </li>
             ))}
+
+            {/* Liens supplémentaires pour mobile */}
+            <li className="border-b dark:border-gray-700">
+              <a
+                href="#"
+                onClick={closeAllMobileMenus}
+                className="w-full flex items-center p-4 hover:text-[#810b15] dark:text-white dark:hover:text-[#e63946]"
+              >
+                <LuCircleHelp size={20} className="mr-3 text-gray-400" />
+                <span>Aide</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={closeAllMobileMenus}
+                className="w-full flex items-center p-4 hover:text-[#810b15] dark:text-white dark:hover:text-[#e63946] font-medium"
+              >
+                <LuHandshake size={20} className="mr-3 text-gray-400" />
+                <span>Devenir partenaire</span>
+              </a>
+            </li>
           </ul>
         </div>
       )}

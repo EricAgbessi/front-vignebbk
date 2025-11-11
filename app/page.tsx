@@ -81,7 +81,11 @@ const App: React.FC = () => {
   );
 
   useEffect(() => {
-    if (_filtersProductData && _filtersProductData.length > 0) {
+    if (
+      _filtersProductData &&
+      _filtersProductData.length > 0 &&
+      Object.keys(activeFilters).length !== 0
+    ) {
       const targetAnchor = "#_filtersProductData";
       if (typeof window !== "undefined") {
         const targetElement = document.getElementById("_filtersProductData");
@@ -90,7 +94,9 @@ const App: React.FC = () => {
         }
       }
     }
-  }, [_filtersProductData]);
+
+    console.log("_filtersProductData", _filtersProductData);
+  }, [_filtersProductData, activeFilters]);
 
   const handleFilterChange = (filters: Record<string, any>) => {
     setActiveFilters((prev) => ({ ...prev, ...filters }));
@@ -199,7 +205,7 @@ const App: React.FC = () => {
           />
         )}
         {/* === CONTENU PRINCIPAL === */}
-        <main className="flex-1 min-h-[calc(100vh-4rem)]">
+        <main className="flex-1 min-h-[calc(100vh-4rem)] mt-20">
           {/* SUPPRESSION du bouton filtre non-FAB ici :
           
           <div className="md:hidden p-4 border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
@@ -209,9 +215,9 @@ const App: React.FC = () => {
           */}
 
           {/* Contenu avec marges latérales */}
-          <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+          <div className="p-1 md:p-6 lg:p-8 max-w-7xl mx-auto">
             {/* Contenu de votre liste de produits... */}
-            <section className="bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 mb-6">
+            <section className="bg-white dark:bg-black  md:dark:bg-zinc-800 p-6 rounded-lg shadow-sm border border-zinc-200 dark:border-none  md:dark:border-zinc-700 mb-6">
               <WineBanner slides={slides} filters={filters} />
 
               <ProductIntroBanner
@@ -221,7 +227,7 @@ const App: React.FC = () => {
                 link="/meilleures-ventes"
               />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mt-20">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mt-36 md:mt-20">
                 {_featuredProducts.length > 0
                   ? _featuredProducts.map((product, index) => (
                       <WineProductCard

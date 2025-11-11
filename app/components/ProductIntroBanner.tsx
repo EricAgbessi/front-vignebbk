@@ -17,7 +17,7 @@ const ProductIntroBanner: React.FC<ProductIntroBannerProps> = ({
   link,
 }) => {
   return (
-    <div className="w-full max-w-full mx-auto px-4 sm:px-6 h-[100px] lg:px-8 py-8 md:py-12">
+    <div className="w-full max-w-full mx-auto  md:mb-2 px-4 sm:px-6 h-[100px] lg:px-8 py-8 md:py-12">
       <div
         className="relative h-48 md:h-[100px] rounded-t-3xl overflow-hidden shadow-2xl"
         style={{
@@ -28,7 +28,7 @@ const ProductIntroBanner: React.FC<ProductIntroBannerProps> = ({
         }}
       >
         {/* Calque de superposition sombre pour la lisibilité du texte */}
-        <div className="absolute h-[100px] inset-0 bg-black bg-opacity-60 flex items-center justify-between p-6 md:p-10">
+        <div className="absolute h-[100%] inset-0 bg-black bg-opacity-60 flex flex-col md:flex-row items-center justify-between p-6 md:p-10">
           {/* Bloc de Texte (Titre et Sous-titre) */}
           <div className="text-white max-w-md">
             <p className="text-lg md:text-lg font-extrabold mb-2 leading-tight">
