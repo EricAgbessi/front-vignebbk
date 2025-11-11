@@ -306,7 +306,7 @@ const Header = () => {
                 {mobileActiveMenu === menuItem && (
                   <div className="bg-gray-50 dark:bg-gray-900 animate-slideDown">
                     <div className="p-4 border-t dark:border-gray-700">
-                      <h4 className="font-bold text-[#810b15] dark:text-[#e63946] text-black  text-lg mb-3 pb-2 border-b border-[#810b15] dark:border-gray-600">
+                      <h4 className="font-bold  dark:text-[#e63946] text-black  text-lg mb-3 pb-2 border-b border-[#810b15] dark:border-gray-600">
                         {megaMenus[menuItem].title}
                       </h4>
 
