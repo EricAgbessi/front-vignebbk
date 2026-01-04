@@ -9,7 +9,6 @@ import { getFilters } from "@/app/services/filters.service";
 import WineBanner from "@/app/components/WineBanner";
 import WineProductCard from "@/app/components/WineProductCard";
 import { useFilteredProducts } from "@/app/hooks/useProducts";
-import { useParams } from "next/navigation";
 
 const slides = [
   {
@@ -26,15 +25,12 @@ const slides = [
 ];
 
 const VinsBlancsPage: React.FC = () => {
-  const params = useParams();
-  const slug = params.slug as string;
-
   const [activeFilters, setActiveFilters] = useState<Record<string, any>>({
     styles: "vin_blanc",
     types: "vin",
   });
 
-  const { data: filtersData, isLoading: isLoadingFilters } = useQuery({
+  const { data: filtersData } = useQuery({
     queryKey: ["filters"],
     queryFn: getFilters,
   });
@@ -54,13 +50,11 @@ const VinsBlancsPage: React.FC = () => {
       <Header />
 
       <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 space-y-24">
-        {/* Hero Section */}
         <section className="rounded-[40px] overflow-hidden shadow-2xl">
           <WineBanner slides={slides} />
         </section>
 
         <div className="flex flex-col lg:flex-row gap-16">
-          {/* Sidebar */}
           <aside className="lg:w-80 flex-shrink-0">
             <div className="sticky top-32">
               {filtersData && (
@@ -72,12 +66,11 @@ const VinsBlancsPage: React.FC = () => {
             </div>
           </aside>
 
-          {/* Product Grid */}
           <div className="flex-1 space-y-12">
             <div className="flex items-end justify-between border-b-2 border-zinc-100 dark:border-zinc-800 pb-8">
               <div>
                 <h1 className="text-4xl md:text-5xl font-black font-cavas tracking-tighter uppercase">
-                  Vins Blancs {slug && `• ${slug.replace(/-/g, ' ')}`}
+                  Tous nos Vins Blancs
                 </h1>
                 <p className="text-zinc-500 text-lg mt-2 font-medium">
                   {filteredResults?.pagination.total || 0} références d'exception sélectionnées pour vous.

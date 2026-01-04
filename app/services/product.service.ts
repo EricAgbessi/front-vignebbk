@@ -8,6 +8,16 @@ export const getFeateredProduct = async () => {
   return response.data;
 };
 
+export const getProductById = async (id: number) => {
+  try {
+    const response = await api.get(`${PRODUCT_ROUTES.BASE}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    throw error;
+  }
+};
+
 export const getFilteredProduct = (filters: any = {}) => {
   const params = new URLSearchParams();
 

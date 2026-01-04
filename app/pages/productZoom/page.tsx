@@ -4,7 +4,7 @@ import ProductTabs from "@/app/components/ProductZoom/ProductTabs";
 const ProductZoomPage = () => {
   return (
     <>
-      <ProductZoom />
+      {/* <ProductZoom /> */}
       <ProductTabs />
     </>
   );

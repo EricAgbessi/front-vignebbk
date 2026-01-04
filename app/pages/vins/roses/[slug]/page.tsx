@@ -1,311 +1,117 @@
-// app/vins/roses/[slug]/page.tsx
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useState } from "react";
 import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
 import FiltersSidebar from "@/app/components/Filtres";
 import { useQuery } from "@tanstack/react-query";
 import { getFilters } from "@/app/services/filters.service";
 import WineBanner from "@/app/components/WineBanner";
-import FeaturedCategories from "@/app/components/FeaturedCategories";
-import ProductIntroBanner from "@/app/components/ProductIntroBanner";
-import WineGuidesSection from "@/app/components/WineGuidesSection";
 import WineProductCard from "@/app/components/WineProductCard";
-import { mapLegacyToNewProps } from "@/app/type";
-import {
-  useFeaturedProducts,
-  useFilteredProducts,
-} from "@/app/hooks/useProducts";
-import { normalizeFeaturedProducts } from "@/app/utils";
+import { useFilteredProducts } from "@/app/hooks/useProducts";
 import { useParams } from "next/navigation";
-import { NoResults } from "@/app/components/NoResults";
 
 const slides = [
   {
     id: 1,
     bg: "bg-[url('/images/vin-rose.jpeg')]",
-    title: "ROSÉS DE PROVENCE",
-    subtitle: "L'élégance et la fraîcheur méditerranéenne",
-    desc: "Sélection des meilleurs rosés de Provence pour l'été",
-    discount: "ROSÉS D'EXCEPTION -20%",
-    button: "DÉCOUVRIR LES ROSÉS",
+    title: "VINS ROSÉS & FRAÎCHEUR",
+    subtitle: "Soleil, convivialité et légèreté",
+    desc: "Une sélection de rosés croquants et fruités pour vos moments de partage.",
+    discount: "OFFRE ÉTÉ -25%",
+    button: "VOIR LES ROSÉS",
     type: "vin",
-    category: "Provence",
-  },
-  //   {
-  //     id: 2,
-  //     bg: "bg-[url('/images/vin-rose-2.jpg')]",
-  //     title: "ROSÉS FRUITS & GOURMANDS",
-  //     subtitle: "Des arômes de fruits rouges et d'agrumes",
-  //     desc: "Rosés fruités parfaits pour l'apéritif et les repas estivaux",
-  //     discount: "PROMOTION ÉTÉ -25%",
-  //     button: "VOIR LES ROSÉS FRUITÉS",
-  //     type: "vin",
-  //     category: "Fruité",
-  //   },
-  //   {
-  //     id: 3,
-  //     bg: "bg-[url('/images/vin-rose-3.jpg')]",
-  //     title: "ROSÉS BIO & NATURE",
-  //     subtitle: "Des vins authentiques et responsables",
-  //     desc: "Sélection de domaines en agriculture biologique",
-  //     discount: "ROSÉS NATURE -15%",
-  //     button: "DÉCOUVRIR LES BIO",
-  //     type: "vin",
-  //     category: "Bio & Nature",
-  //   },
-];
-
-const filters = [
-  { label: "ROUGE", icon: "🍷" },
-  { label: "BLANC", icon: "🥂" },
-  { label: "ROSÉ", icon: "🍹" },
-  { label: "GRANDS VINS", icon: "🏅" },
-  { label: "CHAMPAGNE", icon: "🍾" },
-  { label: "WHISKY AND CO", icon: "🥃" },
+    category: "Rosé",
+  }
 ];
 
 const VinsRosesPage: React.FC = () => {
   const params = useParams();
   const slug = params.slug as string;
 
-  const [showSidebar, setShowSidebar] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, any>>({
-    // Filtre par défaut pour les vins rosés
     styles: "vin_rose",
     types: "vin",
   });
 
-  const {
-    data: filtersData,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+  const { data: filtersData } = useQuery({
     queryKey: ["filters"],
     queryFn: getFilters,
   });
 
-  // Utilisation du hook useFilteredProducts avec les filtres incluant le type "rosé"
-  let { data: filtersProductData, isLoading: isLoadingFiltersProduct } =
-    useFilteredProducts(activeFilters);
-  const _filtersProductData = normalizeFeaturedProducts(
-    filtersProductData?.data
-  );
+  const { data: filteredResults, isLoading: isLoadingProducts } = useFilteredProducts(activeFilters);
 
-  useEffect(() => {
-    if (_filtersProductData && _filtersProductData.length > 0) {
-      const targetAnchor = "#_filtersProductData";
-      if (typeof window !== "undefined") {
-        const targetElement = document.getElementById("_filtersProductData");
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: "smooth" });
-        }
-      }
-    }
-  }, [_filtersProductData]);
-
-  const handleFilterChange = (filters: Record<string, any>) => {
-    setActiveFilters((prev) => ({
-      ...prev,
-      ...filters,
-      // On garde toujours le filtre "rosé" actif
+  const handleFilterChange = (newFilters: Record<string, any>) => {
+    setActiveFilters({
+      ...newFilters,
       styles: "vin_rose",
       types: "vin",
-    }));
-
-    if (Object.keys(filters).length === 0) {
-      setActiveFilters({ styles: "vin_rose", types: "vin" });
-    }
+    });
   };
-
-  // Récupérer les produits en vedette au chargement
-  const { data: queryResult } = useFeaturedProducts(8) || {};
-  let _featuredProducts = normalizeFeaturedProducts(queryResult?.data);
-
-  // Données par défaut pour les vins rosés
-  const defaultWineData = {
-    category: "Vin Rosé",
-    name: "Côtes de Provence - Cuvée Prestige",
-    vintage: "2023",
-    producer: "Château de la Croix",
-    volume: "0.75 L",
-    region: "Provence",
-    alcohol: "13% vol",
-    rating: 17,
-    maxRating: 20,
-    reviewCount: 89,
-    description:
-      "Un rosé élégant aux arômes de fruits rouges et d'agrumes, parfait pour les soirées d'été !",
-    originalPrice: 18.5,
-    currentPrice: 15.9,
-    discount: 14,
-    imageUrl: "/images/vin-rose-1.png",
-    badges: ["primeur", "coup de cœur"],
-  };
-
-  // Conversion des données
-  const productProps = mapLegacyToNewProps(defaultWineData);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
-        <div className="text-lg text-zinc-600 dark:text-zinc-400">
-          Chargement en cours...
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
-        <div className="text-lg text-red-600 dark:text-red-400">
-          Erreur: {error.message}
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-zinc-50 font-sans dark:bg-black">
-      {/* ===== Header global ===== */}
-      <div className="fixed top-0 w-full z-50">
-        <Header />
-      </div>
+    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 selection:bg-[#810b15] selection:text-white">
+      <Header />
 
-      {/* ===== Layout principal ===== */}
-      <div className="flex pt-20">
-        {/* === SIDEBAR (filtres) === */}
-        <aside
-          className={`
-            fixed md:sticky top-16 left-0 md:left-[10%] z-40
-            h-[calc(100vh-4rem)] w-80 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700
-            transform transition-transform duration-300 ease-in-out
-            overflow-y-auto
-            ${
-              showSidebar
-                ? "translate-x-0"
-                : "-translate-x-full md:translate-x-0"
-            }
-          `}
-        >
-          <div className="md:hidden flex justify-end p-4 border-b border-zinc-200 dark:border-zinc-700">
-            <button
-              onClick={() => setShowSidebar(false)}
-              className="text-sm px-4 py-2 rounded-lg bg-[#810b15] text-white hover:bg-[#6a0912] transition-colors"
-            >
-              ✕ Fermer
-            </button>
-          </div>
-          <div className="p-6 mt-16">
-            <FiltersSidebar
-              data={filtersData}
-              onFilterChange={handleFilterChange}
-            />
-          </div>
-        </aside>
+      <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 space-y-24">
+        <section className="rounded-[40px] overflow-hidden shadow-2xl">
+          <WineBanner slides={slides} />
+        </section>
 
-        {/* === OVERLAY pour mobile === */}
-        {showSidebar && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-            onClick={() => setShowSidebar(false)}
-          />
-        )}
+        <div className="flex flex-col lg:flex-row gap-16">
+          <aside className="lg:w-80 flex-shrink-0">
+            <div className="sticky top-32">
+              {filtersData && (
+                <FiltersSidebar 
+                  data={filtersData} 
+                  onFilterChange={handleFilterChange} 
+                />
+              )}
+            </div>
+          </aside>
 
-        {/* === CONTENU PRINCIPAL === */}
-        <main className="flex-1 min-h-[calc(100vh-4rem)] mt-16">
-          <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
-            <section className="bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 mb-6">
-              {/* Bannière spécifique aux vins rosés */}
-              <div className="mb-8 text-center">
-                <h1 className="text-3xl font-bold text-[#810b15] font-cavas dark:text-white mb-4">
-                  Nos Vins Rosés
+          <div className="flex-1 space-y-12">
+            <div className="flex items-end justify-between border-b-2 border-zinc-100 dark:border-zinc-800 pb-8">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-black font-cavas tracking-tighter uppercase">
+                  Vins Rosés {slug && `• ${slug.replace(/-/g, ' ')}`}
                 </h1>
-                <p className="text-lg font-bold text-zinc-600 font-cavas dark:text-zinc-400">
-                  Découvrez notre sélection de vins rosés, de la Provence aux
-                  nouvelles cuvées fruitées.
+                <p className="text-zinc-500 text-lg mt-2 font-medium">
+                  {filteredResults?.pagination.total || 0} références ensoleillées sélectionnées pour vous.
                 </p>
               </div>
+            </div>
 
-              <WineBanner slides={slides} filters={filters} />
-
-              {/* Produits filtrés (vins rosés) */}
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mt-20"
-                id="_filtersProductData"
-              >
-                {_filtersProductData &&
-                _filtersProductData.length > 0 &&
-                Object.keys(activeFilters).length !== 0
-                  ? _filtersProductData.map((product, index) => (
-                      <WineProductCard
-                        key={index}
-                        {...mapLegacyToNewProps(product)}
-                      />
-                    ))
-                  : ""}
+            {isLoadingProducts ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="h-[500px] bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-3xl" />
+                ))}
               </div>
-
-              {_filtersProductData && _filtersProductData.length === 0 && (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    width: "100%",
-                  }}
-                >
-                  <NoResults />
-                </div>
-              )}
-
-              <ProductIntroBanner
-                title="Les Rosés les Plus Appréciés"
-                subtitle="Découvrez les vins rosés qui enchantent nos clients par leur fraîcheur et leur fruité"
-                backgroundImageUrl="/images/promo-vins-roses.jpg"
-                link="/vins/roses/meilleures-ventes"
-              />
-
-              <FeaturedCategories />
-
-              <WineGuidesSection />
-            </section>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {filteredResults?.data.map((product: any) => (
+                  <WineProductCard key={product.id} {...product} />
+                ))}
+                {filteredResults?.data.length === 0 && (
+                  <div className="col-span-full py-32 text-center space-y-6 bg-white dark:bg-zinc-900 rounded-[40px] border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+                    <span className="text-8xl">🍹</span>
+                    <h3 className="text-2xl font-black font-cavas">Aucun vin rosé ne correspond à ces critères</h3>
+                    <button 
+                      onClick={() => setActiveFilters({ styles: "vin_rose", types: "vin" })}
+                      className="bg-[#810b15] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#6a0912] transition-all"
+                    >
+                      Réinitialiser les filtres
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
 
-      {/* ===== Floating Action Button (FAB) pour les filtres mobiles ===== */}
-      <button
-        onClick={() => setShowSidebar(!showSidebar)}
-        className="
-          fixed bottom-6 right-6 z-50 
-          md:hidden 
-          px-6 py-4 text-white 
-          rounded-full shadow-lg 
-          font-medium text-lg 
-          bg-[#810b15]
-          dark:bg-black
-          hover:bg-[#6a0912] transition-all duration-300 
-          flex items-center gap-3
-        "
-        aria-label="Afficher les filtres"
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"
-          />
-        </svg>
-        Filtres
-      </button>
+      <Footer />
     </div>
   );
 };

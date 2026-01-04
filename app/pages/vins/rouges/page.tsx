@@ -9,32 +9,28 @@ import { getFilters } from "@/app/services/filters.service";
 import WineBanner from "@/app/components/WineBanner";
 import WineProductCard from "@/app/components/WineProductCard";
 import { useFilteredProducts } from "@/app/hooks/useProducts";
-import { useParams } from "next/navigation";
 
 const slides = [
   {
     id: 1,
-    bg: "bg-[url('/images/vin-blanc.jpeg')]",
-    title: "VINS BLANCS D'EXCEPTION",
-    subtitle: "Fraîcheur, élégance et minéralité",
-    desc: "Une sélection rigoureuse des plus beaux terroirs de France et d'ailleurs.",
-    discount: "OFFRE SPÉCIALE -20%",
-    button: "EXPLORER LA SÉLECTION",
+    bg: "bg-[url('/images/vin-rouge.jpeg')]",
+    title: "GRANDS VINS ROUGES",
+    subtitle: "Puissance, caractère et élégance",
+    desc: "Des crus classés aux pépites de vignerons, découvrez l'âme de nos terroirs.",
+    discount: "SÉLECTION PRESTIGE -15%",
+    button: "VOIR LA SÉLECTION",
     type: "vin",
-    category: "Blanc",
+    category: "Rouge",
   }
 ];
 
-const VinsBlancsPage: React.FC = () => {
-  const params = useParams();
-  const slug = params.slug as string;
-
+const VinsRougesPage: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<Record<string, any>>({
-    styles: "vin_blanc",
+    styles: "vin_rouge",
     types: "vin",
   });
 
-  const { data: filtersData, isLoading: isLoadingFilters } = useQuery({
+  const { data: filtersData } = useQuery({
     queryKey: ["filters"],
     queryFn: getFilters,
   });
@@ -44,7 +40,7 @@ const VinsBlancsPage: React.FC = () => {
   const handleFilterChange = (newFilters: Record<string, any>) => {
     setActiveFilters({
       ...newFilters,
-      styles: "vin_blanc",
+      styles: "vin_rouge",
       types: "vin",
     });
   };
@@ -54,13 +50,11 @@ const VinsBlancsPage: React.FC = () => {
       <Header />
 
       <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 space-y-24">
-        {/* Hero Section */}
         <section className="rounded-[40px] overflow-hidden shadow-2xl">
           <WineBanner slides={slides} />
         </section>
 
         <div className="flex flex-col lg:flex-row gap-16">
-          {/* Sidebar */}
           <aside className="lg:w-80 flex-shrink-0">
             <div className="sticky top-32">
               {filtersData && (
@@ -72,15 +66,14 @@ const VinsBlancsPage: React.FC = () => {
             </div>
           </aside>
 
-          {/* Product Grid */}
           <div className="flex-1 space-y-12">
             <div className="flex items-end justify-between border-b-2 border-zinc-100 dark:border-zinc-800 pb-8">
               <div>
                 <h1 className="text-4xl md:text-5xl font-black font-cavas tracking-tighter uppercase">
-                  Vins Blancs {slug && `• ${slug.replace(/-/g, ' ')}`}
+                  Tous nos Vins Rouges
                 </h1>
                 <p className="text-zinc-500 text-lg mt-2 font-medium">
-                  {filteredResults?.pagination.total || 0} références d'exception sélectionnées pour vous.
+                  {filteredResults?.pagination.total || 0} références de caractère sélectionnées pour vous.
                 </p>
               </div>
             </div>
@@ -98,10 +91,10 @@ const VinsBlancsPage: React.FC = () => {
                 ))}
                 {filteredResults?.data.length === 0 && (
                   <div className="col-span-full py-32 text-center space-y-6 bg-white dark:bg-zinc-900 rounded-[40px] border-2 border-dashed border-zinc-200 dark:border-zinc-800">
-                    <span className="text-8xl">🥂</span>
-                    <h3 className="text-2xl font-black font-cavas">Aucun vin blanc ne correspond à ces critères</h3>
+                    <span className="text-8xl">🍷</span>
+                    <h3 className="text-2xl font-black font-cavas">Aucun vin rouge ne correspond à ces critères</h3>
                     <button 
-                      onClick={() => setActiveFilters({ styles: "vin_blanc", types: "vin" })}
+                      onClick={() => setActiveFilters({ styles: "vin_rouge", types: "vin" })}
                       className="bg-[#810b15] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#6a0912] transition-all"
                     >
                       Réinitialiser les filtres
@@ -119,4 +112,4 @@ const VinsBlancsPage: React.FC = () => {
   );
 };
 
-export default VinsBlancsPage;
+export default VinsRougesPage;

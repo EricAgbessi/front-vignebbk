@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Header from "./components/Header";
 import FiltersSidebar from "./components/Filtres";
 import { useQuery } from "@tanstack/react-query";
@@ -9,9 +9,7 @@ import FeaturedCategories from "./components/FeaturedCategories";
 import ProductIntroBanner from "./components/ProductIntroBanner";
 import WineGuidesSection from "./components/WineGuidesSection";
 import WineProductCard from "./components/WineProductCard";
-import { mapLegacyToNewProps } from "./type";
 import { useFeaturedProducts, useFilteredProducts } from "./hooks/useProducts";
-import { normalizeFeaturedProducts } from "./utils";
 
 const slides = [
   {
@@ -47,10 +45,9 @@ const slides = [
     type: "cognac",
     category: "Raretés",
   },
-  // tu peux ajouter d'autres slides ici si tu veux un vrai carrousel
 ];
 
-const filters = [
+const categories = [
   { label: "ROUGE", icon: "🍷" },
   { label: "BLANC", icon: "🥂" },
   { label: "ROSÉ", icon: "🍹" },
@@ -59,289 +56,139 @@ const filters = [
   { label: "WHISKY AND CO", icon: "🥃" },
 ];
 
-const App: React.FC = () => {
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+import Footer from "./components/Footer";
 
-  const {
-    data: filtersData,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+const App: React.FC = () => {
+  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({});
+
+  const { data: filtersData } = useQuery({
     queryKey: ["filters"],
     queryFn: getFilters,
   });
 
-  let { data: filtersProductData, isLoading: isLoadingFiltersProduct } =
-    useFilteredProducts(activeFilters);
-  const _filtersProductData = normalizeFeaturedProducts(
-    filtersProductData?.data
-  );
+  const { data: featuredProducts, isLoading: isLoadingFeatured } = useFeaturedProducts(12);
+  const { data: filteredResults, isLoading: isLoadingFiltered } = useFilteredProducts(activeFilters);
 
-  useEffect(() => {
-    if (
-      _filtersProductData &&
-      _filtersProductData.length > 0 &&
-      Object.keys(activeFilters).length !== 0
-    ) {
-      const targetAnchor = "#_filtersProductData";
-      if (typeof window !== "undefined") {
-        const targetElement = document.getElementById("_filtersProductData");
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: "smooth" });
-        }
-      }
-    }
-
-    console.log("_filtersProductData", _filtersProductData);
-  }, [_filtersProductData, activeFilters]);
-
-  const handleFilterChange = (filters: Record<string, any>) => {
-    setActiveFilters((prev) => ({ ...prev, ...filters }));
-    if (Object.keys(filters).length === 0) {
-      setActiveFilters({});
-    }
-  };
-
-  // Récupérer les produits en vedette au chargement
-
-  const { data: queryResult } = useFeaturedProducts(8) || {};
-  let _featuredProducts = normalizeFeaturedProducts(queryResult?.data);
-
-  // useEffect(() => {
-  //   _featuredProducts = normalizeFeaturedProducts(queryResult?.data);
-  //   console.log(_featuredProducts,queryResult?.data);
-  // }, [queryResult]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
-        <div className="text-lg text-zinc-600 dark:text-zinc-400">
-          Chargement en cours...
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
-        <div className="text-lg text-red-600 dark:text-red-400">
-          Erreur: {error.message}
-        </div>
-      </div>
-    );
-  }
-  const wineData = {
-    category: "Vin de France",
-    name: "Villa des Anges - Réserve",
-    vintage: "2022",
-    producer: "Jeff Carrel",
-    volume: "0.75 L",
-    region: "Vin de France",
-    alcohol: "14% vol",
-    rating: 17,
-    maxRating: 20,
-    reviewCount: 57,
-    description:
-      "Un cuvée emblématique de la sélection qui ravira le palais des amateurs de vins structurés avec du caractère !",
-    originalPrice: 9.5,
-    currentPrice: 6.5,
-    discount: 31,
-    imageUrl: "/images/prod-1.png",
-    badges: ["taster", "challenge-e"],
-  };
-
-  // Conversion des données
-  const productProps = mapLegacyToNewProps(wineData);
+  const isFiltering = Object.keys(activeFilters).length > 0;
+  const displayProducts = isFiltering ? filteredResults?.data : featuredProducts;
 
   return (
-    <div className="min-h-screen bg-zinc-50 font-sans dark:bg-black">
-      {/* ===== Header global ===== */}
-      <div className="fixed top-0 w-full z-50">
-        <Header />
-      </div>
+    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 selection:bg-[#810b15] selection:text-white">
+      <Header />
 
-      {/* ===== Layout principal ===== */}
-      <div className="flex pt-20">
-        {" "}
-        {/* Compensation pour le header fixe */}
-        {/* === SIDEBAR (filtres) === */}
-        <aside
-          className={`
-            fixed md:sticky top-16 left-0 md:left-[10%] z-40
-            h-[calc(100vh-4rem)] w-80 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700
-            transform transition-transform duration-300 ease-in-out
-            overflow-y-auto
-            ${
-              showSidebar
-                ? "translate-x-0"
-                : "-translate-x-full md:translate-x-0"
-            }
-          `}
-        >
-          <div className="md:hidden flex justify-end p-4 border-b border-zinc-200 dark:border-zinc-700">
-            <button
-              onClick={() => setShowSidebar(false)}
-              className="text-sm px-4 py-2 rounded-lg bg-[#810b15] text-white hover:bg-purple-700 transition-colors"
+      <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 space-y-24">
+        {/* Hero Section */}
+        <section className="rounded-[40px] overflow-hidden shadow-2xl">
+          <WineBanner slides={slides} />
+        </section>
+
+        {/* Trust Badges */}
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-y border-zinc-200 dark:border-zinc-800">
+          {[
+            { icon: "🚚", title: "Livraison Express", desc: "Chez vous en 24/48h" },
+            { icon: "🛡️", title: "Paiement Sécurisé", desc: "Transactions 100% cryptées" },
+            { icon: "🍷", title: "Expertise Sommelier", desc: "Sélection rigoureuse" },
+            { icon: "🤝", title: "Service Client", desc: "À votre écoute 6j/7" },
+          ].map((badge, i) => (
+            <div key={i} className="flex items-center gap-4 px-6">
+              <span className="text-4xl">{badge.icon}</span>
+              <div>
+                <h4 className="font-black font-cavas text-sm uppercase tracking-wider">{badge.title}</h4>
+                <p className="text-xs text-zinc-500">{badge.desc}</p>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* Categories Quick Access */}
+        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          {categories.map((cat, i) => (
+            <button 
+              key={i}
+              className="group bg-white dark:bg-zinc-900 p-8 rounded-[32px] border border-zinc-100 dark:border-zinc-800 hover:border-[#810b15] transition-all duration-500 flex flex-col items-center gap-4 shadow-sm hover:shadow-xl hover:-translate-y-1"
             >
-              ✕ Fermer
+              <span className="text-4xl group-hover:scale-125 transition-transform duration-500">{cat.icon}</span>
+              <span className="text-xs font-black uppercase tracking-[0.2em] font-cavas">{cat.label}</span>
             </button>
-          </div>
-          <div className="p-6 mt-20">
-            <FiltersSidebar
-              data={filtersData}
-              onFilterChange={handleFilterChange}
-            />
-          </div>
-        </aside>
-        {/* === OVERLAY pour mobile === */}
-        {showSidebar && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-            onClick={() => setShowSidebar(false)}
-          />
-        )}
-        {/* === CONTENU PRINCIPAL === */}
-        <main className="flex-1 min-h-[calc(100vh-4rem)] mt-20">
-          {/* SUPPRESSION du bouton filtre non-FAB ici :
-          
-          <div className="md:hidden p-4 border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
-            ... (Ancien bouton)
-          </div>
-          
-          */}
+          ))}
+        </section>
 
-          {/* Contenu avec marges latérales */}
-          <div className="p-1 md:p-6 lg:p-8 max-w-7xl mx-auto">
-            {/* Contenu de votre liste de produits... */}
-            <section className="bg-white dark:bg-black  md:dark:bg-zinc-800 p-6 rounded-lg shadow-sm border border-zinc-200 dark:border-none  md:dark:border-zinc-700 mb-6">
-              <WineBanner slides={slides} filters={filters} />
+        {/* Main Content Grid */}
+        <div className="flex flex-col lg:flex-row gap-16">
+          {/* Sidebar */}
+          <aside className="lg:w-80 flex-shrink-0">
+            <div className="sticky top-32">
+              {filtersData && (
+                <FiltersSidebar 
+                  data={filtersData} 
+                  onFilterChange={setActiveFilters} 
+                />
+              )}
+            </div>
+          </aside>
 
-              <ProductIntroBanner
-                title="Les Favoris de nos Clients"
-                subtitle="Trouvez votre bonheur parmi nos meilleures ventes Vins & Champagnes"
-                backgroundImageUrl="/images/promo-vins.jpg"
-                link="/meilleures-ventes"
-              />
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mt-36 md:mt-20">
-                {_featuredProducts.length > 0
-                  ? _featuredProducts.map((product, index) => (
-                      <WineProductCard
-                        key={index}
-                        {...mapLegacyToNewProps(product)}
-                      />
-                    ))
-                  : // Produits par défaut (en vedette)
-                    [...Array(4)].map((_, i) => (
-                      <WineProductCard key={i} {...productProps} />
-                    ))}
+          {/* Product Grid */}
+          <div className="flex-1 space-y-12">
+            <div className="flex items-end justify-between border-b-2 border-zinc-100 dark:border-zinc-800 pb-8">
+              <div>
+                <h2 className="text-4xl md:text-5xl font-black font-cavas tracking-tighter">
+                  {isFiltering ? "Résultats de recherche" : "Sélection du moment"}
+                </h2>
+                <p className="text-zinc-500 text-lg mt-2 font-medium">
+                  {isFiltering 
+                    ? `${filteredResults?.pagination.total || 0} pépites dénichées pour vous` 
+                    : "L'excellence de notre cave, livrée chez vous."}
+                </p>
               </div>
+            </div>
 
-              <FeaturedCategories />
-
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mt-20"
-                id="_filtersProductData"
-              >
-                {_filtersProductData.length > 0 &&
-                Object.keys(activeFilters).length !== 0
-                  ? _filtersProductData.map((product, index) => (
-                      <WineProductCard
-                        key={index}
-                        {...mapLegacyToNewProps(product)}
-                      />
-                    ))
-                  : ""}
-              </div>
-
-              <WineGuidesSection />
-            </section>
-
-            {/* Sections supplémentaires... */}
-            {/* <section className="bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700">
-              <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-white">
-                Autre section
-              </h2>
-              <p className="text-zinc-600 dark:text-zinc-400 mb-4">
-                Contenu supplémentaire avec les mêmes marges...
-              </p>
-              <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg"
-                  >
-                    <h3 className="font-medium text-zinc-800 dark:text-white">
-                      Élément #{i + 1}
-                    </h3>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      Description de l'élément...
-                    </p>
-                  </div>
+            {(isLoadingFeatured || isLoadingFiltered) ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="h-[500px] bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-3xl" />
                 ))}
               </div>
-            </section>
-
-            <section className="mt-8 bg-white dark:bg-zinc-800 p-6 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700">
-              <h2 className="text-xl font-semibold mb-4 text-zinc-800 dark:text-white">
-                Section de test de scroll
-              </h2>
-              <div className="space-y-4">
-                {[...Array(10)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="p-6 border border-zinc-200 dark:border-zinc-700 rounded-lg"
-                  >
-                    <h3 className="font-medium text-lg text-zinc-800 dark:text-white mb-2">
-                      Contenu de test #{i + 1}
-                    </h3>
-                    <p className="text-zinc-600 dark:text-zinc-400">
-                      Cette section permet de tester le comportement du scroll.
-                    </p>
-                  </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {displayProducts?.map((product: any) => (
+                  <WineProductCard key={product.id} {...product} />
                 ))}
+                {displayProducts?.length === 0 && (
+                  <div className="col-span-full py-32 text-center space-y-6 bg-white dark:bg-zinc-900 rounded-[40px] border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+                    <span className="text-8xl">🍷</span>
+                    <h3 className="text-2xl font-black font-cavas">Aucun produit ne correspond à vos critères</h3>
+                    <p className="text-zinc-500 max-w-md mx-auto">Essayez de modifier vos filtres ou explorez nos autres catégories pour trouver votre bonheur.</p>
+                    <button 
+                      onClick={() => setActiveFilters({})}
+                      className="bg-[#810b15] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#6a0912] transition-all active:scale-95 shadow-lg shadow-[#810b15]/20"
+                    >
+                      Réinitialiser tous les filtres
+                    </button>
+                  </div>
+                )}
               </div>
-            </section> */}
+            )}
           </div>
-        </main>
-      </div>
+        </div>
 
-      {/* ===== Floating Action Button (FAB) pour les filtres mobiles ===== */}
-      <button
-        onClick={() => setShowSidebar(!showSidebar)}
-        className="
-          fixed bottom-6 right-6 z-50 
-          md:hidden 
-          px-6 py-4  text-white 
-          rounded-full shadow-lg 
-          font-medium text-lg 
-          bg-[#810b15]
-          dark:bg-black
-          hover:bg-[810b15] transition-all duration-300 
-          flex items-center gap-3
-        "
-        aria-label="Afficher les filtres"
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"
-          />
-        </svg>
-        Filtres
-      </button>
-      {/* =============================================================== */}
+        {/* Promotional Section */}
+        <section className="bg-zinc-900 rounded-[48px] p-12 md:p-20 relative overflow-hidden shadow-2xl">
+          <div className="relative z-10 max-w-3xl space-y-8">
+            <h2 className="text-5xl md:text-6xl font-black text-white font-cavas leading-none tracking-tighter">Rejoignez le club des passionnés</h2>
+            <p className="text-zinc-400 text-xl leading-relaxed">Recevez nos offres exclusives, des invitations à des dégustations privées et les conseils personnalisés de nos sommeliers experts.</p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <input type="email" placeholder="votre@email.com" className="flex-1 bg-white/10 border-none rounded-2xl px-8 py-5 text-white text-lg outline-none focus:ring-2 focus:ring-[#810b15] transition-all" />
+              <button className="bg-[#810b15] text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-[#6a0912] transition-all active:scale-95 font-cavas">S'inscrire</button>
+            </div>
+          </div>
+          <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-[#810b15]/30 to-transparent hidden lg:block" />
+          <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-[#810b15]/20 blur-[120px] rounded-full" />
+        </section>
+
+        <WineGuidesSection />
+      </main>
+
+      <Footer />
     </div>
   );
 };

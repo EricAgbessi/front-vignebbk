@@ -20,18 +20,21 @@ export const metadata: Metadata = {
   description:
     "Votre caviste en ligne - Découvrez notre sélection de vins, champagnes et cognacs",
   manifest: "/manifest.json",
-  themeColor: "#810b15",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "VIGNEBBK",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
 };
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#810b15",
+};
+
+import { CartProvider } from "./context/CartContext";
 
 export default function RootLayout({
   children,
@@ -54,7 +57,9 @@ export default function RootLayout({
             enableSystem // Active la détection de la préférence système (préféré)
             disableTransitionOnChange // Ajout important
           >
-            {children}
+            <CartProvider>
+              {children}
+            </CartProvider>
           </ThemeProvider>
         </TanstackQueryProvider>
       </body>
